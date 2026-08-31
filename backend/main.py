@@ -62,8 +62,10 @@ def extract_resume_text(file: UploadFile) -> str:
 
         return resume_text[:12000]
 
-    except Exception as e:
+    except HTTPException:
+        raise
 
+    except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Error reading resume PDF: {str(e)}"
