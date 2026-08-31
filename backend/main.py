@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 from pypdf import PdfReader
 from playwright.sync_api import sync_playwright
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 # Configuration
@@ -32,6 +32,14 @@ app = FastAPI(
     description="Generate personalized job application materials using AI."
 )
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your Streamlit app's exact domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Resume PDF Extraction
 

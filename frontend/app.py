@@ -1,8 +1,6 @@
-
 import os
 import requests
 import streamlit as st
-
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -13,7 +11,6 @@ st.set_page_config(
     page_icon="🧞",
     layout="wide"
 )
-
 
 # ============================================================
 # CUSTOM CSS
@@ -40,7 +37,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 # ============================================================
 # HEADER
 # ============================================================
@@ -59,7 +55,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 # ============================================================
 # BACKEND CONFIGURATION
 # ============================================================
@@ -72,11 +67,10 @@ API_URL = os.getenv(
 
 # Override using Streamlit secrets if available
 try:
-    if "API_URL" in st.secrets:
-        API_URL = st.secrets["API_URL"].rstrip("/")
+    if hasattr(st, "secrets") and "API_URL" in st.secrets:
+        API_URL = str(st.secrets["API_URL"]).rstrip("/")
 except Exception:
     pass
-
 
 # ============================================================
 # SESSION STATE
@@ -84,7 +78,6 @@ except Exception:
 
 if "result" not in st.session_state:
     st.session_state.result = None
-
 
 # ============================================================
 # JOB INFORMATION
@@ -98,7 +91,6 @@ job_url = st.text_input(
     help="Paste the URL of the job posting you want to apply for."
 )
 
-
 # ============================================================
 # RESUME UPLOAD
 # ============================================================
@@ -111,7 +103,6 @@ resume = st.file_uploader(
     help="Upload your resume as a PDF file."
 )
 
-
 # ============================================================
 # GENERATE BUTTON
 # ============================================================
@@ -120,7 +111,6 @@ generate = st.button(
     "🚀 Generate Application",
     use_container_width=True
 )
-
 
 # ============================================================
 # GENERATE APPLICATION
@@ -174,11 +164,13 @@ if generate:
     ):
 
         try:
+            # Read bytes cleanly from uploaded file
+            resume_bytes = resume.getvalue()
 
             files = {
                 "resume": (
                     resume.name,
-                    resume.getvalue(),
+                    resume_bytes,
                     "application/pdf"
                 )
             }
@@ -199,49 +191,33 @@ if generate:
             # ------------------------------------------------
 
             if response.status_code == 200:
-
                 try:
                     result = response.json()
-
                 except ValueError:
-                    st.error(
-                        "❌ Backend returned an invalid JSON response."
-                    )
+                    st.error("❌ Backend returned an invalid JSON response.")
                     st.stop()
 
                 st.session_state.result = result
-
-                st.success(
-                    "✅ Application materials generated successfully!"
-                )
+                st.success("✅ Application materials generated successfully!")
 
             # ------------------------------------------------
             # Backend Error
             # ------------------------------------------------
 
             else:
-
                 try:
                     error_data = response.json()
-
-                    error = error_data.get(
-                        "detail",
-                        "Unknown backend error."
-                    )
-
+                    error = error_data.get("detail", "Unknown backend error.")
                 except ValueError:
                     error = response.text
 
-                st.error(
-                    f"❌ Backend Error ({response.status_code}): {error}"
-                )
+                st.error(f"❌ Backend Error ({response.status_code}): {error}")
 
         # ----------------------------------------------------
         # Connection Error
         # ----------------------------------------------------
 
         except requests.exceptions.ConnectionError:
-
             st.error(
                 f"❌ Could not connect to the FastAPI server.\n\n"
                 f"Backend: `{API_URL}`\n\n"
@@ -254,7 +230,6 @@ if generate:
         # ----------------------------------------------------
 
         except requests.exceptions.Timeout:
-
             st.error(
                 "⏳ The request took too long to complete. "
                 "Please try again."
@@ -265,20 +240,14 @@ if generate:
         # ----------------------------------------------------
 
         except requests.exceptions.RequestException as e:
-
-            st.error(
-                f"❌ Request failed: {str(e)}"
-            )
+            st.error(f"❌ Request failed: {str(e)}")
 
         # ----------------------------------------------------
         # Unexpected Error
         # ----------------------------------------------------
 
         except Exception as e:
-
-            st.error(
-                f"❌ Something went wrong: {str(e)}"
-            )
+            st.error(f"❌ Something went wrong: {str(e)}")
 
 
 # ============================================================
@@ -302,17 +271,13 @@ if st.session_state.result:
 
     st.info(f"**{job_title}**")
 
-
     # --------------------------------------------------------
     # Job Summary
     # --------------------------------------------------------
 
     st.header("📋 Job Summary")
 
-    job_summary = res.get(
-        "job_summary",
-        ""
-    )
+    job_summary = res.get("job_summary", "")
 
     st.text_area(
         "Job Summary Output",
@@ -329,17 +294,13 @@ if st.session_state.result:
         key="summary_download"
     )
 
-
     # --------------------------------------------------------
     # Application Email
     # --------------------------------------------------------
 
     st.header("📧 Application Email")
 
-    email = res.get(
-        "email",
-        ""
-    )
+    email = res.get("email", "")
 
     st.text_area(
         "Generated Email Output",
@@ -356,17 +317,13 @@ if st.session_state.result:
         key="email_download"
     )
 
-
     # --------------------------------------------------------
     # Cover Letter
     # --------------------------------------------------------
 
     st.header("📝 Cover Letter")
 
-    cover_letter = res.get(
-        "cover_letter",
-        ""
-    )
+    cover_letter = res.get("cover_letter", "")
 
     st.text_area(
         "Generated Cover Letter Output",
@@ -383,7 +340,6 @@ if st.session_state.result:
         key="cover_download"
     )
 
-
 # ============================================================
 # FOOTER
 # ============================================================
@@ -394,4 +350,3 @@ st.caption(
     "🧞 ApplyGenie • Built with Python • FastAPI • Streamlit • "
     "Playwright • PyPDF • Mistral"
 )
-
