@@ -12,9 +12,7 @@ from playwright.sync_api import sync_playwright
 
 
 
-# =========================================================
 # Configuration
-# =========================================================
 
 load_dotenv()
 
@@ -35,9 +33,8 @@ app = FastAPI(
 )
 
 
-# =========================================================
 # Resume PDF Extraction
-# =========================================================
+
 
 def extract_resume_text(file: UploadFile) -> str:
     """
@@ -73,15 +70,17 @@ def extract_resume_text(file: UploadFile) -> str:
         )
 
 
-# =========================================================
 # Job Posting Extraction using Playwright
-# =========================================================
+
 
 def extract_job_description(url: str):
 
     with sync_playwright() as p:
 
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+        )
 
         page = browser.new_page()
 
@@ -101,9 +100,7 @@ def extract_job_description(url: str):
         return job_text, job_title
 
 
-# =========================================================
 # Generate Application Materials
-# =========================================================
 
 def generate_application_materials(
     job_text: str,
@@ -122,23 +119,22 @@ You are an AI Job Application Assistant.
 Your task is to analyze a job posting and a candidate's resume
 and generate personalized application materials.
 
-========================
 JOB POSTING
-========================
+
 
 {job_text}
 
 
-========================
+
 CANDIDATE RESUME
-========================
+
 
 {resume_text}
 
 
-========================
+
 INSTRUCTIONS
-========================
+
 
 Generate exactly these three outputs:
 
@@ -230,9 +226,8 @@ Use exactly this JSON structure:
         )
 
 
-# =========================================================
+
 # Main API Endpoint
-# =========================================================
 
 @app.post("/generate_application")
 async def generate_application(
@@ -273,9 +268,8 @@ async def generate_application(
     }
 
 
-# =========================================================
-# Health Check
-# =========================================================
+# Home Page
+
 
 @app.get("/")
 def home():
