@@ -50,7 +50,7 @@ st.markdown(
 
 # Backend Configuration
 
-API_URL = " https://applygenie.onrender.com/generate_application || http://127.0.0.1:8000 "
+API_URL = " https://applygenie.onrender.com/generate_application || http://127.0.0.1:8000/generate_application "
 
 
 # Input Section
