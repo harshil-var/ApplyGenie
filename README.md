@@ -5,7 +5,14 @@ An AI-powered job application assistant that analyzes a **job posting and a cand
 The application uses **Playwright** to extract information from dynamically rendered job posting pages, **PyPDF** to extract resume content, and **Mistral AI** to generate a personalized application email, cover letter, and concise job summary.
 
 ---
+### 🧪 Quick Demo
 
+To quickly test the application, copy and paste this sample job listing:
+
+* **Sample Job URL:** `https://jobs.lever.co/everbridge/ff6eacff-741a-4f60-aff4-a45e89b003a9`
+* Upload any sample technical resume PDF and click **🚀 Generate Application**.
+  
+---
 ## 🚀 Features
 
 * 🔗 **Job URL Analysis**
