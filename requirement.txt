@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+langchain_mistralai
+pypdf
+playwright
+streamlit
+requests
+
